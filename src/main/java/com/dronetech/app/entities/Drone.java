@@ -1,4 +1,4 @@
-package com.dronetech.app.models;
+package com.dronetech.app.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +14,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -35,8 +35,8 @@ public class Drone {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "sn", nullable = false)
-    private String sn;
+    @Column(name = "sn", nullable = false, unique = true)
+    private String serialNo;
 
     @Column(name = "model", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -55,9 +55,11 @@ public class Drone {
     @OneToMany(mappedBy = "drone")
     private List<Medication> medications;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -66,7 +68,7 @@ public class Drone {
         if (this == other) return true;
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false;
         Drone that = (Drone) other;
-        return getSn() != null && Objects.equals(getSn(), that.getSn());
+        return getSerialNo() != null && Objects.equals(getSerialNo(), that.getSerialNo());
     }
 
     @Override

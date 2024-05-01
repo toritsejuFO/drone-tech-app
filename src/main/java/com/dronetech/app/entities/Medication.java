@@ -1,4 +1,4 @@
-package com.dronetech.app.models;
+package com.dronetech.app.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
