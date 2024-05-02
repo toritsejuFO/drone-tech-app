@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("v1/drone")
@@ -27,6 +28,7 @@ public class DispatchController {
 
     @Operation(summary = "Register Drone", description = "Register a new drone")
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<DroneDto> registerDrone(@RequestBody @Validated DroneDto droneDto) {
         DroneDto createdDrone = droneService.registerDrone(droneDto);
         return ResponseDto.<DroneDto>builder()
@@ -38,10 +40,10 @@ public class DispatchController {
 
     @Operation(summary = "Retrieve Drone", description = "Retrieve a drone by serial number")
     @GetMapping("/{serialNo}")
-    public ResponseDto<DroneDto> registerDrone(@PathVariable String serialNo) {
+    public ResponseDto<DroneDto> retrieveDrone(@PathVariable String serialNo) {
         DroneDto drone = droneService.retrieveDrone(serialNo);
         return ResponseDto.<DroneDto>builder()
-            .status(HttpStatus.CREATED.value())
+            .status(HttpStatus.OK.value())
             .success(true)
             .data(drone)
             .build();
