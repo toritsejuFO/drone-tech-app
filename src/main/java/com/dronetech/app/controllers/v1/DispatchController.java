@@ -3,6 +3,7 @@ package com.dronetech.app.controllers.v1;
 import com.dronetech.app.dtos.DroneDto;
 import com.dronetech.app.dtos.ResponseDto;
 import com.dronetech.app.services.DroneService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class DispatchController {
     @Autowired
     private final DroneService droneService;
 
+    @Operation(summary = "Register Drone", description = "Register a new drone")
     @PostMapping("/register")
     public ResponseDto<DroneDto> registerDrone(@RequestBody @Validated DroneDto droneDto) {
         DroneDto createdDrone = droneService.registerDrone(droneDto);
@@ -34,6 +36,7 @@ public class DispatchController {
             .build();
     }
 
+    @Operation(summary = "Retrieve Drone", description = "Retrieve a drone by serial number")
     @GetMapping("/{serialNo}")
     public ResponseDto<DroneDto> registerDrone(@PathVariable String serialNo) {
         DroneDto drone = droneService.retrieveDrone(serialNo);
