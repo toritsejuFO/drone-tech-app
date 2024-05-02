@@ -6,6 +6,7 @@ import com.dronetech.app.entities.Drone;
 import com.dronetech.app.entities.mappers.EntityMapper;
 import com.dronetech.app.exceptions.DroneAlreadyRegisteredException;
 import com.dronetech.app.exceptions.DroneNotFoundException;
+import com.dronetech.app.exceptions.DroneStateAndBatteryMismatchException;
 import com.dronetech.app.respositories.DroneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class DroneService {
 
     public DroneDto registerDrone(DroneDto droneDto) {
         ensureDroneIsNotRegistered(droneDto);
+        ensureDroneStateMatchesBatteryCapacity(droneDto);
         Drone savedDrone = droneRepository.save(EntityMapper.dtoToEntity(droneDto));
         return DtoMapper.droneToDto(savedDrone);
     }
@@ -35,6 +37,12 @@ public class DroneService {
     private void ensureDroneIsNotRegistered(DroneDto droneDto) {
         if (droneRepository.existsBySerialNo(droneDto.getSerialNo())) {
             throw new DroneAlreadyRegisteredException("Drone with Serial No '" + droneDto.getSerialNo() + "' is already registered");
+        }
+    }
+
+    private void ensureDroneStateMatchesBatteryCapacity(DroneDto droneDto) {
+        if (DroneDto.DroneStateDto.LOADING.equals(droneDto.getState()) && droneDto.getBatteryCapacity() < 25) {
+            throw new DroneStateAndBatteryMismatchException("Battery Capacity cannot be below 25 when Drone State is LOADING");
         }
     }
 }

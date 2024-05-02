@@ -56,10 +56,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BaseException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponseDto handleException(BaseException e) {
         return ErrorResponseDto.builder()
-            .status(HttpStatus.NOT_FOUND.value())
+            .status(HttpStatus.BAD_REQUEST.value())
             .success(false)
             .message(e.getMessage())
             .errorCode(e.getErrorCode())

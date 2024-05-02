@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +51,7 @@ class DroneTechAppApplicationTests {
 
     @WithMockUser(value = "spring")
     @Test
-    void registerDrone() throws Exception {
+    void test_registerDrone_successfully() throws Exception {
         DroneDto droneDto = podam.manufacturePojo(DroneDto.class);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/drone/register")
@@ -57,6 +59,40 @@ class DroneTechAppApplicationTests {
                 .content(mapper.writeValueAsString(droneDto)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("success", is(true)));
+    }
+
+    @WithMockUser(value = "spring")
+    @Test
+    void test_registerDrone_alreadyRegistered() throws Exception {
+        DroneDto droneDto = podam.manufacturePojo(DroneDto.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/drone/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(droneDto)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("success", is(true)));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/drone/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(droneDto)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("success", is(false)))
+            .andExpect(jsonPath("message", containsString("is already registered")));
+    }
+
+    @WithMockUser(value = "spring")
+    @Test
+    void test_registerDrone_stateAndBatteryCapacityMismatch() throws Exception {
+        DroneDto droneDto = podam.manufacturePojo(DroneDto.class);
+        droneDto.setBatteryCapacity(24);
+        droneDto.setState(DroneDto.DroneStateDto.LOADING);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/drone/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(droneDto)))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("success", is(false)))
+            .andExpect(jsonPath("message", is("Battery Capacity cannot be below 25 when Drone State is LOADING")));
     }
 
     @WithMockUser(value = "spring")
