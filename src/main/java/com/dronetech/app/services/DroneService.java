@@ -104,4 +104,11 @@ public class DroneService {
         return droneDtos;
     }
 
+
+    public Integer retrieveDroneBatteryLevel(String serialNo) {
+        Drone drone = droneRepository.findBySerialNo(serialNo);
+        droneHelperService.ensureDroneNotNull(drone, serialNo);
+        return drone.getBatteryCapacity();
+    }
+
 }

@@ -87,4 +87,15 @@ public class DispatchController {
             .data(drones)
             .build();
     }
+
+    @Operation(summary = "Check Drone Battery Level", description = "Check the battery level of a drone by serial number")
+    @GetMapping("/{serialNo}/battery")
+    public ResponseDto<Integer> retrieveDroneBatteryLevel(@PathVariable String serialNo) {
+        Integer batteryLevel = droneService.retrieveDroneBatteryLevel(serialNo);
+        return ResponseDto.<Integer>builder()
+            .status(HttpStatus.OK.value())
+            .success(true)
+            .data(batteryLevel)
+            .build();
+    }
 }
