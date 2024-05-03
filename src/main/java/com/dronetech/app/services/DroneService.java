@@ -11,6 +11,7 @@ import com.dronetech.app.exceptions.DroneAlreadyRegisteredException;
 import com.dronetech.app.exceptions.DroneMaxWeightExceededException;
 import com.dronetech.app.exceptions.DroneNotFoundException;
 import com.dronetech.app.exceptions.DroneStateAndBatteryMismatchException;
+import com.dronetech.app.exceptions.DroneUnavailableForLoadingException;
 import com.dronetech.app.exceptions.FileOperationException;
 import com.dronetech.app.respositories.DroneRepository;
 import com.dronetech.app.respositories.MedicationRepository;
@@ -56,6 +57,7 @@ public class DroneService {
         medicationDto.performCustomValidation();
         Drone drone = droneRepository.findBySerialNo(serialNo);
         ensureDroneNotNull(drone, serialNo);
+        ensureDroneAvailableForLoading(drone);
         MedicationDto.SingleMedication[] singleMedications = medicationDto.getSingleMedications();
         ensureTotalWeightIsBelowMaxCapacity(drone, singleMedications);
 
@@ -76,7 +78,7 @@ public class DroneService {
         return droneDto;
     }
 
-    public DroneDto retrieveLoadedMedications(String serialNo, boolean withImage) {
+    public List<MedicationDto.SingleMedication> retrieveLoadedMedications(String serialNo, boolean withImage) {
         Drone drone = droneRepository.findBySerialNo(serialNo);
         ensureDroneNotNull(drone, serialNo);
         DroneDto droneDto = DroneDtoMapper.droneToDto(drone);
@@ -90,7 +92,14 @@ public class DroneService {
                 }
             });
         }
-        return droneDto;
+        return droneDto.getMedications();
+    }
+
+    public List<DroneDto> retrieveAvailableDrones() {
+        List<Drone> drones = droneRepository.findByStateIn(List.of(Drone.DroneState.IDLE, Drone.DroneState.LOADING));
+        List<DroneDto> droneDtos = drones.stream().map(DroneDtoMapper::droneToDto).toList();
+        droneDtos.forEach(droneDto -> droneDto.setMedications(null));
+        return droneDtos;
     }
 
     private void ensureDroneNotNull(Drone drone, String serialNo) {
@@ -108,6 +117,12 @@ public class DroneService {
     private void ensureDroneStateMatchesBatteryCapacity(DroneDto droneDto) {
         if (DroneDto.DroneStateDto.LOADING.equals(droneDto.getState()) && droneDto.getBatteryCapacity() < 25) {
             throw new DroneStateAndBatteryMismatchException("Battery Capacity cannot be below 25 when Drone State is LOADING");
+        }
+    }
+
+    private void ensureDroneAvailableForLoading(Drone drone) {
+        if (!List.of(Drone.DroneState.LOADING, Drone.DroneState.LOADING).contains(drone.getState())) {
+            throw new DroneUnavailableForLoadingException("Drone is not available for loading Medication");
         }
     }
 

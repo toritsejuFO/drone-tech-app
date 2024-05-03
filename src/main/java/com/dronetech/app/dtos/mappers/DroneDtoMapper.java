@@ -2,6 +2,7 @@ package com.dronetech.app.dtos.mappers;
 
 import com.dronetech.app.dtos.DroneDto;
 import com.dronetech.app.entities.Drone;
+import com.dronetech.app.entities.Medication;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -9,12 +10,15 @@ import lombok.NoArgsConstructor;
 public class DroneDtoMapper {
 
     public static DroneDto droneToDto(Drone drone) {
+        double totalWeight = drone.getMedications() != null ? drone.getMedications().stream().mapToDouble(Medication::getWeight).sum() : 0.0;
+
         return DroneDto.builder()
             .serialNo(drone.getSerialNo())
             .model(modelToDto(drone.getModel()))
             .weightLimit(drone.getWeightLimit())
             .state(stateToDto(drone.getState()))
             .batteryCapacity(drone.getBatteryCapacity())
+            .availableWeight(drone.getWeightLimit() - totalWeight)
             .medications(drone.getMedications() != null ? drone.getMedications().stream().map(MedicationDtoMapper::medicationToDto).toList() : null)
             .build();
     }

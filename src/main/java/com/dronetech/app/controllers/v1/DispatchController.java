@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequestMapping("v1/drone")
 @RequiredArgsConstructor
 @RestController
@@ -66,12 +68,23 @@ public class DispatchController {
 
     @Operation(summary = "Get Loaded Medications", description = "Get all medications loaded into a drone by serial number")
     @GetMapping("/{serialNo}/medications")
-    public ResponseDto<DroneDto> retrieveLoadedMedications(@PathVariable String serialNo, @RequestParam(defaultValue = "false") boolean withImage) {
-        DroneDto drone = droneService.retrieveLoadedMedications(serialNo, withImage);
-        return ResponseDto.<DroneDto>builder()
+    public ResponseDto<List<MedicationDto.SingleMedication>> retrieveLoadedMedications(@PathVariable String serialNo, @RequestParam(defaultValue = "false") boolean withImage) {
+        List<MedicationDto.SingleMedication> medications = droneService.retrieveLoadedMedications(serialNo, withImage);
+        return ResponseDto.<List<MedicationDto.SingleMedication>>builder()
             .status(HttpStatus.OK.value())
             .success(true)
-            .data(drone)
+            .data(medications)
+            .build();
+    }
+
+    @Operation(summary = "Get Available Drones", description = "Get all available drones for loading")
+    @GetMapping("/available")
+    public ResponseDto<List<DroneDto>> retrieveAvailableDrones() {
+        List<DroneDto> drones = droneService.retrieveAvailableDrones();
+        return ResponseDto.<List<DroneDto>>builder()
+            .status(HttpStatus.OK.value())
+            .success(true)
+            .data(drones)
             .build();
     }
 }

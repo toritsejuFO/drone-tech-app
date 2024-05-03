@@ -44,6 +44,8 @@ public class DroneDto {
     @NotNull
     private DroneStateDto state;
 
+    private Double availableWeight;
+
     private List<MedicationDto.SingleMedication> medications;
 
     public enum DroneModelDto {
