@@ -21,6 +21,10 @@ To run the project execute the following command:
 
 ```./mvnw spring-boot:run```
 
+To run prebuilt package use the following command:
+
+```java -jar target/app-0.0.1-SNAPSHOT.jar```
+
 ### Running the Tests
 To run the tests execute the following command:
 
