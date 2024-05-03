@@ -8,7 +8,7 @@ The application provides REST API endpoints to manage drones and the medications
 * Java Development Kit (JDK) 17 or higher
 * Apache Maven (Optional, provided in the project root directory as a wrapper)
 
-## Setup
+## Build, Run, & Test
 ### Building the Project
 The project uses Maven as a build tool. It already contains ./mvn wrapper script, so there's no need to install mvn locally).
 
@@ -20,6 +20,11 @@ To build the project execute the following command:
 To run the project execute the following command:
 
 ```./mvnw spring-boot:run```
+
+### Running the Tests
+To run the tests execute the following command:
+
+```./mvnw test```
 
 ### Accessing the Application
 The application will be accessible at the following URL:
