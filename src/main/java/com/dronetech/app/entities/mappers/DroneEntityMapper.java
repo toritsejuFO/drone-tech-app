@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EntityMapper {
+public class DroneEntityMapper {
 
     public static Drone dtoToEntity(DroneDto droneDto) {
         return Drone.builder()

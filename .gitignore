@@ -36,3 +36,4 @@ build/
 application-dev.properties
 /data
 .jpb
+/uploads

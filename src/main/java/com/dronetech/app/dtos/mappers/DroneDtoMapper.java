@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DtoMapper {
+public class DroneDtoMapper {
 
     public static DroneDto droneToDto(Drone drone) {
         return DroneDto.builder()
@@ -15,6 +15,7 @@ public class DtoMapper {
             .weightLimit(drone.getWeightLimit())
             .state(stateToDto(drone.getState()))
             .batteryCapacity(drone.getBatteryCapacity())
+            .medications(drone.getMedications() != null ? drone.getMedications().stream().map(MedicationDtoMapper::medicationToDto).toList() : null)
             .build();
     }
 

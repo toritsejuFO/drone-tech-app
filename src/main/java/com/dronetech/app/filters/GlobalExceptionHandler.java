@@ -2,6 +2,8 @@ package com.dronetech.app.filters;
 
 import com.dronetech.app.dtos.ErrorResponseDto;
 import com.dronetech.app.exceptions.BaseException;
+import com.dronetech.app.exceptions.FileOperationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -16,11 +18,13 @@ import java.util.List;
 
 @RestControllerAdvice
 @Order(-1)
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ErrorResponseDto handleException(Exception e) {
+        log.error("BaseException: {}", e.getMessage(), e);
         return ErrorResponseDto.builder()
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
             .success(false)
@@ -41,6 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponseDto handleException(MethodArgumentNotValidException e) {
+
         List<String> errors = new ArrayList<>();
 
         for (FieldError fe : e.getBindingResult().getFieldErrors()) {
@@ -58,8 +63,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponseDto handleException(BaseException e) {
+        log.error("BaseException: {}", e.getMessage(), e);
         return ErrorResponseDto.builder()
             .status(HttpStatus.BAD_REQUEST.value())
+            .success(false)
+            .message(e.getMessage())
+            .errorCode(e.getErrorCode())
+            .build();
+    }
+
+    @ExceptionHandler(FileOperationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected ErrorResponseDto handleException(FileOperationException e) {
+        return ErrorResponseDto.builder()
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
             .success(false)
             .message(e.getMessage())
             .errorCode(e.getErrorCode())

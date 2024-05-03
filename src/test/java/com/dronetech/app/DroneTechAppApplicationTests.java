@@ -1,7 +1,7 @@
 package com.dronetech.app;
 
 import com.dronetech.app.dtos.DroneDto;
-import com.dronetech.app.entities.mappers.EntityMapper;
+import com.dronetech.app.entities.mappers.DroneEntityMapper;
 import com.dronetech.app.respositories.DroneRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class DroneTechAppApplicationTests {
     @Test
     void retrieveDrone() throws Exception {
         DroneDto droneDto = podam.manufacturePojo(DroneDto.class);
-        droneRepository.save(EntityMapper.dtoToEntity(droneDto));
+        droneRepository.save(DroneEntityMapper.dtoToEntity(droneDto));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/drone/" + droneDto.getSerialNo()))
             .andExpect(status().isOk())

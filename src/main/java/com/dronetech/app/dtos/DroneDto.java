@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -41,6 +43,8 @@ public class DroneDto {
 
     @NotNull
     private DroneStateDto state;
+
+    private List<MedicationDto.SingleMedication> medications;
 
     public enum DroneModelDto {
         LIGHTWEIGHT,
