@@ -11,6 +11,7 @@ import com.dronetech.app.exceptions.DroneAlreadyRegisteredException;
 import com.dronetech.app.exceptions.DroneMaxWeightExceededException;
 import com.dronetech.app.exceptions.DroneNotFoundException;
 import com.dronetech.app.exceptions.DroneStateAndBatteryMismatchException;
+import com.dronetech.app.exceptions.FileOperationException;
 import com.dronetech.app.respositories.DroneRepository;
 import com.dronetech.app.respositories.MedicationRepository;
 import com.dronetech.app.services.api.FileUploadService;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,6 +73,23 @@ public class DroneService {
 
         DroneDto droneDto = DroneDtoMapper.droneToDto(savedDrone);
         droneDto.setMedications(null); // intentionally not returning medications, has a separate endpoint
+        return droneDto;
+    }
+
+    public DroneDto retrieveLoadedMedications(String serialNo, boolean withImage) {
+        Drone drone = droneRepository.findBySerialNo(serialNo);
+        ensureDroneNotNull(drone, serialNo);
+        DroneDto droneDto = DroneDtoMapper.droneToDto(drone);
+        if (withImage) {
+            droneDto.getMedications().forEach(medicationDto -> {
+                try {
+                    medicationDto.setImage(fileUploadService.getFile(medicationDto.getImageUrl()));
+                } catch (IOException e) {
+                    log.error("Error retrieving image file: {}", e.getMessage(), e);
+                    throw new FileOperationException("Error retrieving image file");
+                }
+            });
+        }
         return droneDto;
     }
 

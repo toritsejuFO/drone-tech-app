@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,12 +53,23 @@ public class DispatchController {
     }
 
     @Operation(summary = "Load Medication", description = "Load medication into a drone by serial number")
-    @PostMapping("/{serialNo}/medication")
+    @PostMapping("/{serialNo}/medications")
     public ResponseDto<DroneDto> loadMedication(@ModelAttribute @Validated MedicationDto medicationDto, @PathVariable String serialNo) {
         DroneDto drone = droneService.loadMedication(serialNo, medicationDto);
         return ResponseDto.<DroneDto>builder()
             .status(HttpStatus.OK.value())
             .message("Medication loaded successfully")
+            .success(true)
+            .data(drone)
+            .build();
+    }
+
+    @Operation(summary = "Get Loaded Medications", description = "Get all medications loaded into a drone by serial number")
+    @GetMapping("/{serialNo}/medications")
+    public ResponseDto<DroneDto> retrieveLoadedMedications(@PathVariable String serialNo, @RequestParam(defaultValue = "false") boolean withImage) {
+        DroneDto drone = droneService.retrieveLoadedMedications(serialNo, withImage);
+        return ResponseDto.<DroneDto>builder()
+            .status(HttpStatus.OK.value())
             .success(true)
             .data(drone)
             .build();
