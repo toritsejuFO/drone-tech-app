@@ -36,4 +36,5 @@ build/
 application-dev.properties
 /data
 .jpb
-/uploads
+/uploads/*
+!/uploads/customer.jpeg
