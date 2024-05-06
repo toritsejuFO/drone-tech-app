@@ -1,5 +1,6 @@
 package com.dronetech.app.controllers.v1;
 
+import com.dronetech.app.dtos.BatteryAuditLogDto;
 import com.dronetech.app.dtos.DroneDto;
 import com.dronetech.app.dtos.MedicationDto;
 import com.dronetech.app.dtos.ResponseDto;
@@ -107,6 +108,17 @@ public class DispatchController {
             .status(HttpStatus.OK.value())
             .success(true)
             .data(batteryLevel)
+            .build();
+    }
+
+    @Operation(summary = "Retrieve Battery Audit Log for a Drone", description = "Get the Battery Audit Log for a specific Drone by it's serialNo")
+    @GetMapping("/{serialNo}/battery/audit-log")
+    public ResponseDto<List<BatteryAuditLogDto>> retrieveDroneBatteryLevelAuditLog(@PathVariable String serialNo) {
+        List<BatteryAuditLogDto> batteryAuditLogs = droneService.retrieveDroneBatteryLevelAuditLog(serialNo);
+        return ResponseDto.<List<BatteryAuditLogDto>>builder()
+            .status(HttpStatus.OK.value())
+            .success(true)
+            .data(batteryAuditLogs)
             .build();
     }
 }

@@ -1,13 +1,17 @@
 package com.dronetech.app.services;
 
+import com.dronetech.app.dtos.BatteryAuditLogDto;
 import com.dronetech.app.dtos.DroneDto;
 import com.dronetech.app.dtos.MedicationDto;
+import com.dronetech.app.dtos.mappers.BatteryAuditLogDtoMapper;
 import com.dronetech.app.dtos.mappers.DroneDtoMapper;
+import com.dronetech.app.entities.BatteryAuditLog;
 import com.dronetech.app.entities.Drone;
 import com.dronetech.app.entities.Medication;
 import com.dronetech.app.entities.mappers.DroneEntityMapper;
 import com.dronetech.app.entities.mappers.MedicationEntityMapper;
 import com.dronetech.app.exceptions.FileOperationException;
+import com.dronetech.app.respositories.BatteryAuditLogRepository;
 import com.dronetech.app.respositories.DroneRepository;
 import com.dronetech.app.respositories.MedicationRepository;
 import com.dronetech.app.services.api.FileUploadService;
@@ -34,6 +38,8 @@ public class DroneService {
     private final FileUploadService fileUploadService;
     @Autowired
     private final DroneHelperService droneHelperService;
+    @Autowired
+    private final BatteryAuditLogRepository batteryAuditLogRepository;
 
     public DroneDto registerDrone(DroneDto droneDto) {
         droneHelperService.ensureDroneIsNotRegistered(droneDto);
@@ -105,11 +111,17 @@ public class DroneService {
         return droneDtos;
     }
 
-
     public Integer retrieveDroneBatteryLevel(String serialNo) {
         Drone drone = droneRepository.findBySerialNo(serialNo);
         droneHelperService.ensureDroneNotNull(drone, serialNo);
         return drone.getBatteryCapacity();
+    }
+
+    public List<BatteryAuditLogDto> retrieveDroneBatteryLevelAuditLog(String serialNo) {
+        Drone drone = droneRepository.findBySerialNo(serialNo);
+        droneHelperService.ensureDroneNotNull(drone, serialNo);
+        List<BatteryAuditLog> batteryAuditLogs = batteryAuditLogRepository.findByDroneSerialNoOrderByTimestampDesc(serialNo);
+        return batteryAuditLogs.stream().map(BatteryAuditLogDtoMapper::auditLogDto).toList();
     }
 
 }
