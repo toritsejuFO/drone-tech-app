@@ -54,6 +54,17 @@ public class DispatchController {
             .build();
     }
 
+    @Operation(summary = "Retrieve all drones", description = "Retrieve all drones")
+    @GetMapping("/all")
+    public ResponseDto<List<DroneDto>> retrieveAllDrones() {
+        List<DroneDto> drones = droneService.retrieveAllDrones();
+        return ResponseDto.<List<DroneDto>>builder()
+            .status(HttpStatus.OK.value())
+            .success(true)
+            .data(drones)
+            .build();
+    }
+
     @Operation(summary = "Load Medication", description = "Load medication into a drone by serial number")
     @PostMapping("/{serialNo}/medications")
     public ResponseDto<DroneDto> loadMedication(@ModelAttribute @Validated MedicationDto medicationDto, @PathVariable String serialNo) {

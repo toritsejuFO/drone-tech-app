@@ -7,11 +7,6 @@ import com.dronetech.app.entities.Drone;
 import com.dronetech.app.entities.Medication;
 import com.dronetech.app.entities.mappers.DroneEntityMapper;
 import com.dronetech.app.entities.mappers.MedicationEntityMapper;
-import com.dronetech.app.exceptions.DroneAlreadyRegisteredException;
-import com.dronetech.app.exceptions.DroneMaxWeightExceededException;
-import com.dronetech.app.exceptions.DroneNotFoundException;
-import com.dronetech.app.exceptions.DroneStateAndBatteryMismatchException;
-import com.dronetech.app.exceptions.DroneUnavailableForLoadingException;
 import com.dronetech.app.exceptions.FileOperationException;
 import com.dronetech.app.respositories.DroneRepository;
 import com.dronetech.app.respositories.MedicationRepository;
@@ -51,6 +46,12 @@ public class DroneService {
         Drone drone = droneRepository.findBySerialNo(serialNo);
         droneHelperService.ensureDroneNotNull(drone, serialNo);
         return DroneDtoMapper.droneToDto(drone);
+    }
+
+    public List<DroneDto> retrieveAllDrones() {
+        List<Drone> drones = (List<Drone>) droneRepository.findAll();
+        // Returns drones with their medications (w/o actual images)
+        return drones.stream().map(DroneDtoMapper::droneToDto).toList();
     }
 
     @Transactional
